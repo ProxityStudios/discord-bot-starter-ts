@@ -1,10 +1,10 @@
 {
-  "name": "discord-bot-starter",
+  "name": "discord-bot-starter-ts",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "ts-node-dev src/bot.ts"
+    "dev": "ts-node-dev src/bot.ts"
   },
   "keywords": [],
   "author": "",
