@@ -3,7 +3,7 @@ export enum CommandName {
   Hello = "hello",
   Help = "help",
 
-  // Moderaiton
+  // Moderation
   AssignRole = "assignrole",
 }
 
