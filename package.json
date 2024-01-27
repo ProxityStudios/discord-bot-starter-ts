@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/bot.ts",
   "scripts": {
+    "start": "ts-node src/bot.ts",
     "dev": "ts-node-dev src/bot.ts"
   },
   "keywords": [],
