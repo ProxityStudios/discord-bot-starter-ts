@@ -2,7 +2,6 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { CustomClient } from "../../client";
 import { Command, CommandContext } from "../../command";
 import { CommandCategory, CommandName } from "../../types";
-import { EmbedBuilder } from "discord.js";
 
 export default class extends Command {
   public constructor(client: CustomClient) {
@@ -17,9 +16,9 @@ export default class extends Command {
     interaction: ChatInputCommandInteraction,
     ctx: CommandContext
   ): Promise<void> {
-    const embed = ctx.messaging
-      .infoEmbed("This is a list of commands you can use.")
-      .setColor("#3498db");
+    const embed = ctx.messaging.infoEmbed(
+      "This is a list of commands you can use."
+    );
 
     const commands = ctx.commands.commands.sort((a, b) =>
       a.name.localeCompare(b.name)
