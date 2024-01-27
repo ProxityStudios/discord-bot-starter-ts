@@ -2,7 +2,7 @@
   "name": "discord-bot-starter-ts",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/bot.ts",
   "scripts": {
     "dev": "ts-node-dev src/bot.ts"
   },

@@ -37,6 +37,7 @@ export abstract class Command {
 
   public constructor(client: CustomClient, props: CommandOptions) {
     this.client = client;
+    
     this.name = props.name;
     this.description = props.description;
     this.category = props.category;

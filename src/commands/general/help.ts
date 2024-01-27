@@ -17,8 +17,8 @@ export default class extends Command {
     interaction: ChatInputCommandInteraction,
     ctx: CommandContext
   ): Promise<void> {
-    const embed = new EmbedBuilder()
-      .setDescription("This is a list of commands you can use.")
+    const embed = ctx.messaging
+      .infoEmbed("This is a list of commands you can use.")
       .setColor("#3498db");
 
     const commands = ctx.commands.commands.sort((a, b) =>

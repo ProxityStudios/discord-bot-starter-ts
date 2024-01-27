@@ -26,35 +26,4 @@ export class MessagingService extends Service {
     embed.setDescription(message);
     return embed;
   }
-
-  public progressBar(percent: number) {
-    const left = "🟩";
-    const middle = "🟩";
-    const right = "🟩";
-    const empty = "⬜";
-
-    const total = 10;
-    const filled = Math.round((percent / 100) * total);
-    const remaining = total - filled;
-
-    let progressBar = "";
-
-    if (filled > 0) {
-      progressBar += left;
-    }
-
-    for (let i = 1; i < filled - 1; i++) {
-      progressBar += middle;
-    }
-
-    if (filled > 1) {
-      progressBar += right;
-    }
-
-    for (let i = 0; i < remaining; i++) {
-      progressBar += empty;
-    }
-
-    return progressBar;
-  }
 }
