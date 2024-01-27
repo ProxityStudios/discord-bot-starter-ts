@@ -30,21 +30,20 @@ This will compile the TypeScript code into JavaScript and start the bot using `t
 
 ## Features
 
-- **Command handler**: A flexible and modular way to create and manage commands for your bot. You can add new commands by creating a file in the `src/commands` folder that follows this structure:
+### Command handler
+
+A flexible and modular way to create and manage commands for your bot. You can add new commands by creating a file in the `src/commands` folder that follows this structure:
 
 ```typescript
-// Import necessary modules
-import { ChatInputCommandInteraction } from "discord.js";
-import { CustomClient } from "../../client";
-import { Command } from "../../command";
-import { CommandCategory, CommandName } from "../../types";
-
 export default class extends Command {
   public constructor(client: CustomClient) {
     super(client, {
-      name: CommandName.Example, // The name of the command
-      description: "This is an example description.", // A brief description of what the command does
-      category: CommandCategory.General, // The category of the command
+      // The name of the command
+      name: CommandName.Example,
+      // A brief description of what the command does
+      description: "This is an example description.",
+      // The category of the command
+      category: CommandCategory.General,
     });
   }
 
@@ -71,5 +70,37 @@ export enum CommandName {
 export enum CommandCategory {
   // ...
   Moderation = "Moderation",
+}
+```
+
+### Slash commands
+
+You can create slash command options by using `this.data` property. For example, this is how you can add a `String` option:
+
+```typescript
+super(client, {
+  // ...
+});
+
+// Creating slash command options
+this.data.addStringOption((option) =>
+  option
+    .setName("input")
+    .setDescription("The input to echo back")
+    .setRequired(true)
+);
+```
+
+To use the options, you need to access them from the `interaction.options` property. For example, this is how you can get the value of the `String` option in your execute method:
+
+```typescript
+public async execute(
+  interaction: ChatInputCommandInteraction
+): Promise<void> {
+  // The logic of the slash command goes here
+  const input = interaction.options.getString("input");
+  await interaction.reply({
+    content: `You said: ${input}`,
+  });
 }
 ```
