@@ -13,9 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.14.1"
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "tslog": "^4.9.2"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/node": "^20.11.6",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",

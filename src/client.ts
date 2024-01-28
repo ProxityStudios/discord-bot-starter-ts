@@ -1,13 +1,16 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { ILogObj, Logger } from 'tslog';
 import { MessagingService } from './services/messaging';
 import { CommandsService } from './services/commands';
-import type { Services } from './types';
+import { Services } from './types';
 import { Service } from './services/service';
 
 export class MyClient extends Client {
 	public services: Services;
 
 	public servicesArr: Service[];
+
+	public logger: Logger<ILogObj>;
 
 	constructor() {
 		super({
@@ -24,6 +27,11 @@ export class MyClient extends Client {
 		};
 		this.servicesArr = Object.values(this.services);
 
+		this.logger = new Logger({
+			type: 'pretty',
+			prettyLogTemplate: '{{MM}}:{{ss}} {{logLevelName}} ',
+		});
+
 		this.on(Events.ClientReady, (c) => this.onClientReady(c));
 	}
 
@@ -35,17 +43,17 @@ export class MyClient extends Client {
 				servicesPromises.push(s.init());
 			});
 
-			console.log('Starting services');
+			this.logger.info('Starting services');
 			await Promise.all(servicesPromises);
-			console.log('All services initialized successfully');
+			this.logger.info('All services initialized successfully');
 		} catch (error) {
 			// TODO: improve error handling
-			console.error(`error: Error starting services: ${error as any}`);
+			this.logger.error(`error: Error starting services: ${error as any}`);
 			throw error;
 		}
 	}
 
 	private onClientReady(client: Client<true>) {
-		console.log(`${client.user.tag} is now ready to serve.`);
+		this.logger.info(`${client.user.tag} is now ready to serve.`);
 	}
 }

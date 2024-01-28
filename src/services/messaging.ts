@@ -5,7 +5,7 @@ export class MessagingService extends Service {
 	public async init(): Promise<true | Error> {
 		return new Promise((resolve) => {
 			setTimeout(() => {
-				console.log(`Messaging service done`);
+				this.client.logger.info(`Messaging service done`);
 				resolve(true);
 			}, 0);
 		});

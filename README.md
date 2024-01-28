@@ -6,7 +6,7 @@ This is a TypeScript template for creating Discord bots using the [discord.js](h
 
 1. Clone or download this repository
 2. Run `npm install` to install the required packages
-3. Rename `config.example.json` to `config.json` and fill out everything
+3. Rename `.env.example` to `.env` and fill out everything
 4. Run `npm run dev` to start the bot in development mode
 5. Write your bot logic in the `src` folder
 

@@ -1,12 +1,13 @@
+import 'dotenv/config';
 import { MyClient } from './client';
-import config from '../config.json';
+
+const client = new MyClient();
 
 const main = async () => {
-	const client = new MyClient();
 	await client.init();
-	await client.login(config.token);
+	await client.login(process.env.TOKEN);
 };
 
 main().catch((error) => {
-	console.error('An unexecpeted error occured: ', error);
+	client.logger.error('An unexpected error occured: ', error);
 });

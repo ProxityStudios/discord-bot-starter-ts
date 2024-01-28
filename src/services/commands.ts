@@ -9,7 +9,6 @@ import {
 } from 'discord.js';
 import fs from 'fs/promises';
 import path from 'path';
-import config from '../config';
 import { Command } from '../command';
 import { Service } from './service';
 
@@ -28,7 +27,7 @@ export class CommandsService extends Service {
 				this.onInteractionCreate.bind(this)
 			);
 		});
-		console.log(`Commands service done`);
+		this.client.logger.info(`Commands service done`);
 		return true;
 	}
 
@@ -46,7 +45,7 @@ export class CommandsService extends Service {
 					const CommandModule: any = await import(filePath);
 
 					if (
-						CommandModule?.default &&
+						CommandModule.default &&
 						CommandModule.default.prototype instanceof Command
 					) {
 						// TODO: improve types
@@ -56,14 +55,14 @@ export class CommandsService extends Service {
 						);
 						this.commands.push(command);
 						this.cmdMap.set(command.name.toLowerCase(), command);
-						console.log(
+						this.client.logger.info(
 							`Loaded command ${command.name}.ts from ${path.relative(
 								process.cwd(),
 								filePath
 							)}`
 						);
 					} else {
-						console.log(
+						this.client.logger.info(
 							`error: The command at ${filePath} is not an instance of the Command class.`
 						);
 					}
@@ -73,24 +72,26 @@ export class CommandsService extends Service {
 	}
 
 	private async registerCommands() {
-		const rest = new REST().setToken(config.token);
+		const rest = new REST().setToken(process.env.TOKEN!);
 
 		try {
-			console.log(
+			this.client.logger.info(
 				`Refreshing ${this.commands.length} application (/) commands.`
 			);
 
 			const data = (await rest.put(
 				Routes.applicationGuildCommands(
-					config.applicationID,
-					config.guildID
+					process.env.APPLICATION_ID!,
+					process.env.GUILD_ID!
 				),
 				{ body: this.commands.map((command) => command.data.toJSON()) }
 			)) as ChatInputApplicationCommandData[];
 
-			console.log(`Reloaded ${data.length} application (/) commands.`);
+			this.client.logger.info(
+				`Reloaded ${data.length} application (/) commands.`
+			);
 		} catch (error) {
-			console.error(error);
+			this.client.logger.error(error);
 		}
 	}
 
@@ -115,7 +116,9 @@ export class CommandsService extends Service {
 
 		// Check if the interaction has a valid channel and guild
 		if (!channel || !guild) {
-			console.error("Interaction doesn't have a valid channel or guild.");
+			this.client.logger.error(
+				"Interaction doesn't have a valid channel or guild."
+			);
 			return;
 		}
 
@@ -123,7 +126,7 @@ export class CommandsService extends Service {
 		const member =
 			interaction.member ?? (await guild.members.fetch(interaction.user.id));
 		if (!member) {
-			console.error(
+			this.client.logger.error(
 				`Could not get ${interaction.member?.user.id} for ${guild.id}`
 			);
 			return;
@@ -140,7 +143,7 @@ export class CommandsService extends Service {
 				user: interaction.user,
 			});
 		} catch (error) {
-			console.error(error);
+			this.client.logger.error(error);
 			await interaction.reply({
 				content: 'An error occurred while executing the command.',
 			});
