@@ -1,72 +1,75 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
-import { Service } from "./services/service";
-import { MessagingService } from "./services/messaging";
-import { CommandsService } from "./services/commands";
+import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Service } from './services/service';
+import { MessagingService } from './services/messaging';
+import { CommandsService } from './services/commands';
 
 interface IServices {
-  [key: string]: Service;
+	[key: string]: Service;
 
-  messaging: MessagingService;
-  commands: CommandsService;
+	messaging: MessagingService;
+	commands: CommandsService;
 }
 
 export class CustomClient extends Client {
-  public services: IServices;
-  private startingServices: Service[];
+	public services: IServices;
 
-  constructor() {
-    super({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-      ],
-    });
+	private startingServices: Service[];
 
-    this.services = {
-      messaging: new MessagingService(this),
-      commands: new CommandsService(this),
-    };
-    this.startingServices = Object.values(this.services);
+	constructor() {
+		super({
+			intents: [
+				GatewayIntentBits.Guilds,
+				GatewayIntentBits.GuildMembers,
+				GatewayIntentBits.GuildMessages,
+			],
+		});
 
-    this.on(Events.ClientReady, this.onClientReady);
-  }
+		this.services = {
+			messaging: new MessagingService(this),
+			commands: new CommandsService(this),
+		};
+		this.startingServices = Object.values(this.services);
 
-  public async init() {
-    try {
-      await Promise.all(
-        Object.values(this.services).map(async (s) => {
-          const serviceName = `\x1b[1m${s.constructor.name}\x1b[0m`;
-          console.log(
-            `\x1b[33mservice\x1b[0m: Starting service: ${serviceName}`
-          );
-          await s.init();
-          console.log(
-            `\x1b[33mservice\x1b[0m: Service ${serviceName} started successfully.`
-          );
-        })
-      );
-    } catch (error) {
-      console.error(`error: Error starting services: ${error}`);
-      throw error;
-    }
-  }
+		this.on(Events.ClientReady, this.onClientReady);
+	}
 
-  private async onClientReady() {
-    await Promise.all(
-      Object.values(this.services).map((s) => s.onClientReady())
-    );
+	public async init() {
+		try {
+			await Promise.all(
+				Object.values(this.services).map(async (s) => {
+					const serviceName = `\x1b[1m${s.constructor.name}\x1b[0m`;
+					console.log(
+						`\x1b[33mservice\x1b[0m: Starting service: ${serviceName}`
+					);
+					await s.init();
+					console.log(
+						`\x1b[33mservice\x1b[0m: Service ${serviceName} started successfully.`
+					);
+				})
+			);
+		} catch (error) {
+			console.error(`error: Error starting services: ${error}`);
+			throw error;
+		}
+	}
 
-    console.log(
-      `\x1b[32mOK\x1b[0m: \x1b[1m${this.user?.tag}\x1b[0m is now ready to serve.`
-    );
-  }
+	private async onClientReady() {
+		await Promise.all(
+			Object.values(this.services).map((s) => s.onClientReady())
+		);
 
-  public checkServices(service: Service) {
-    this.startingServices = this.startingServices.filter((s) => s !== service);
+		console.log(
+			`\x1b[32mOK\x1b[0m: \x1b[1m${this.user?.tag}\x1b[0m is now ready to serve.`
+		);
+	}
 
-    if (this.startingServices.length === 0) {
-      console.log("\x1b[32mOK\x1b[0m: Services started successfully.");
-    }
-  }
+	public checkServices(service: Service) {
+		this.startingServices = this.startingServices.filter(
+			(s) => s !== service
+		);
+
+		if (this.startingServices.length === 0) {
+			console.log('\x1b[32mOK\x1b[0m: Services started successfully.');
+		}
+	}
 }

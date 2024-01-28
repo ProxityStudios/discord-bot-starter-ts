@@ -18,7 +18,7 @@ This is a TypeScript template for creating Discord bots using the [discord.js](h
 npm run dev
 ```
 
-This will start the bot using `ts-node-dev`, which will automatically restart the bot when you make changes to the code.
+Starts the bot using `ts-node-dev`, which auto-restarts on code changes.
 
 ### Production mode
 
@@ -26,7 +26,7 @@ This will start the bot using `ts-node-dev`, which will automatically restart th
 npm start
 ```
 
-This will compile the TypeScript code into JavaScript and start the bot using `ts-node`.
+Compiles TypeScript to JavaScript and starts the bot using `ts-node`.
 
 ## Features
 
@@ -50,7 +50,7 @@ export default class extends Command {
   public async execute(
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
-    // The logic of the command goes here
+    // Command logic goes here
     await interaction.reply({
       content: `This is an example answer.`,
     });
