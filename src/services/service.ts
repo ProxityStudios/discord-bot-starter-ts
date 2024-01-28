@@ -1,15 +1,11 @@
-import { CustomClient } from '../client';
+import type { MyClient } from '../client';
 
 export abstract class Service {
-	protected client: CustomClient;
+	protected client: MyClient;
 
-	constructor(client: CustomClient) {
+	constructor(client: MyClient) {
 		this.client = client;
 	}
 
-	public abstract init(): Promise<void>;
-
-	public async onClientReady() {
-		this.client.checkServices(this);
-	}
+	public abstract init(): Promise<true | Error>;
 }

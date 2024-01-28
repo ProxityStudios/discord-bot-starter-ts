@@ -1,10 +1,10 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import { CustomClient } from '../../client';
+import type { MyClient } from '../../client';
 import { Command } from '../../command';
 import { CommandCategory, CommandName } from '../../types';
 
 export default class extends Command {
-	public constructor(client: CustomClient) {
+	public constructor(client: MyClient) {
 		super(client, {
 			name: CommandName.Hello,
 			description: 'Greets the user.',

@@ -7,10 +7,10 @@ import {
 	TextChannel,
 	User,
 } from 'discord.js';
-import { CustomClient } from './client';
+import type { MyClient } from './client';
 import { CommandCategory, CommandName } from './types';
 import { MessagingService } from './services/messaging';
-import { CommandsService } from './services/commands';
+import type { CommandsService } from './services/commands';
 
 export interface CommandOptions {
 	name: CommandName;
@@ -28,7 +28,7 @@ export interface CommandContext {
 }
 
 export abstract class Command {
-	public client: CustomClient;
+	public client: MyClient;
 
 	public name: CommandName;
 
@@ -38,7 +38,7 @@ export abstract class Command {
 
 	public data: SlashCommandBuilder;
 
-	public constructor(client: CustomClient, props: CommandOptions) {
+	public constructor(client: MyClient, props: CommandOptions) {
 		this.client = client;
 
 		this.name = props.name;

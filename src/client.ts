@@ -1,19 +1,13 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
-import { Service } from './services/service';
 import { MessagingService } from './services/messaging';
 import { CommandsService } from './services/commands';
+import type { Services } from './types';
+import { Service } from './services/service';
 
-interface IServices {
-	[key: string]: Service;
+export class MyClient extends Client {
+	public services: Services;
 
-	messaging: MessagingService;
-	commands: CommandsService;
-}
-
-export class CustomClient extends Client {
-	public services: IServices;
-
-	private startingServices: Service[];
+	public servicesArr: Service[];
 
 	constructor() {
 		super({
@@ -28,48 +22,30 @@ export class CustomClient extends Client {
 			messaging: new MessagingService(this),
 			commands: new CommandsService(this),
 		};
-		this.startingServices = Object.values(this.services);
+		this.servicesArr = Object.values(this.services);
 
-		this.on(Events.ClientReady, this.onClientReady);
+		this.on(Events.ClientReady, (c) => this.onClientReady(c));
 	}
 
 	public async init() {
 		try {
-			await Promise.all(
-				Object.values(this.services).map(async (s) => {
-					const serviceName = `\x1b[1m${s.constructor.name}\x1b[0m`;
-					console.log(
-						`\x1b[33mservice\x1b[0m: Starting service: ${serviceName}`
-					);
-					await s.init();
-					console.log(
-						`\x1b[33mservice\x1b[0m: Service ${serviceName} started successfully.`
-					);
-				})
-			);
+			const servicesPromises: Promise<true | Error>[] = [];
+
+			this.servicesArr.forEach((s) => {
+				servicesPromises.push(s.init());
+			});
+
+			console.log('Starting services');
+			await Promise.all(servicesPromises);
+			console.log('All services initialized successfully');
 		} catch (error) {
-			console.error(`error: Error starting services: ${error}`);
+			// TODO: improve error handling
+			console.error(`error: Error starting services: ${error as any}`);
 			throw error;
 		}
 	}
 
-	private async onClientReady() {
-		await Promise.all(
-			Object.values(this.services).map((s) => s.onClientReady())
-		);
-
-		console.log(
-			`\x1b[32mOK\x1b[0m: \x1b[1m${this.user?.tag}\x1b[0m is now ready to serve.`
-		);
-	}
-
-	public checkServices(service: Service) {
-		this.startingServices = this.startingServices.filter(
-			(s) => s !== service
-		);
-
-		if (this.startingServices.length === 0) {
-			console.log('\x1b[32mOK\x1b[0m: Services started successfully.');
-		}
+	private onClientReady(client: Client<true>) {
+		console.log(`${client.user.tag} is now ready to serve.`);
 	}
 }

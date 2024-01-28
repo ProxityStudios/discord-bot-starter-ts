@@ -1,10 +1,10 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import { CustomClient } from '../../client';
+import type { MyClient } from '../../client';
 import { Command, CommandContext } from '../../command';
 import { CommandCategory, CommandName } from '../../types';
 
 export default class extends Command {
-	public constructor(client: CustomClient) {
+	public constructor(client: MyClient) {
 		super(client, {
 			name: CommandName.Help,
 			description: 'Displays a list of available commands.',
@@ -25,16 +25,16 @@ export default class extends Command {
 		);
 
 		// Group the commands by category and add them to the embed fields
-		const categories = Object.values(CommandCategory);
-		for (const category of categories) {
+		const commandCategories = Object.values(CommandCategory);
+		commandCategories.forEach((commandCategory) => {
 			const categoryCommands = commands.filter(
-				(c) => c.category === category
+				(c) => c.category === commandCategory
 			);
 			if (categoryCommands.length > 0) {
 				const commandList = categoryCommands.map((c) => c.name).join(', ');
-				embed.addFields({ name: category, value: commandList });
+				embed.addFields({ name: commandCategory, value: commandList });
 			}
-		}
+		});
 
 		await interaction.reply({ embeds: [embed] });
 	}
