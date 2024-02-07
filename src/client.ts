@@ -47,8 +47,7 @@ export class MyClient extends Client {
 			await Promise.all(servicesPromises);
 			this.logger.info('All services initialized successfully');
 		} catch (error) {
-			// TODO: improve error handling
-			this.logger.error(`error: Error starting services: ${error as any}`);
+			this.logger.error(`error: Error starting services: ${error instanceof Error ? error.message : 'Unknown error'}`);
 			throw error;
 		}
 	}
