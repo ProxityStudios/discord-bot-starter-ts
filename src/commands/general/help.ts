@@ -1,30 +1,34 @@
+// Import necessary modules
 import { ChatInputCommandInteraction } from 'discord.js';
 import type { MyClient } from '../../client';
-import { Command, CommandContext } from '../../command';
+import { Command, CommandContext } from '../../structures/Command';
 import { CommandCategory, CommandName } from '../../types';
 
-export default class extends Command {
+// Define the command class
+export default class HelpCommand extends Command {
+	// **Constructor:** Sets up command properties and options
 	public constructor(client: MyClient) {
 		super(client, {
-			name: CommandName.Help,
-			description: 'Displays a list of available commands.',
-			category: CommandCategory.General,
+			name: CommandName.Help, // Command name as it will appear in Discord
+			description: 'Shows available commands.', // Explanation of what the command does
+			category: CommandCategory.General, // Category for command
 		});
 	}
 
+	// **Execute method:** Handles command execution
 	public async execute(
 		interaction: ChatInputCommandInteraction,
-		ctx: CommandContext
+		ctx: CommandContext // Access to command context
 	): Promise<void> {
-		const embed = ctx.messaging.infoEmbed(
-			'This is a list of commands you can use.'
-		);
+		// Create an informative embed with a title
+		const embed = ctx.services.messaging.infoEmbed('Available Commands');
 
+		// Get all registered commands and sort alphabetically
 		const commands = ctx.commands.commands.sort((a, b) =>
 			a.name.localeCompare(b.name)
 		);
 
-		// Group the commands by category and add them to the embed fields
+		// Group commands by category and add to embed fields
 		const commandCategories = Object.values(CommandCategory);
 		commandCategories.forEach((commandCategory) => {
 			const categoryCommands = commands.filter(
@@ -32,10 +36,11 @@ export default class extends Command {
 			);
 			if (categoryCommands.length > 0) {
 				const commandList = categoryCommands.map((c) => c.name).join(', ');
-				embed.addFields({ name: commandCategory, value: commandList });
+				embed.addFields({ name: commandCategory, value: commandList }); // Create fields for each category
 			}
 		});
 
+		// Reply with the informative embed
 		await interaction.reply({ embeds: [embed] });
 	}
 }

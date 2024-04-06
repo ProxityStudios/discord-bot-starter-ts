@@ -9,8 +9,13 @@ import {
 } from 'discord.js';
 import fs from 'fs/promises';
 import path from 'path';
-import { Command } from '../command';
-import { Service } from './service';
+import { Command } from '../structures/Command';
+import { Service } from './Service';
+import type { MyClient } from '../client';
+
+interface ModuleType<T> {
+	default: new (client: MyClient) => T;
+}
 
 export class CommandsService extends Service {
 	public commands: Command[] = [];
@@ -18,7 +23,7 @@ export class CommandsService extends Service {
 	public cmdMap = new Map<string, Command>();
 
 	public async init(): Promise<true | Error> {
-		await this.readCommands(path.join(__dirname, '../commands'));
+		await this.loadCommands(path.join(__dirname, '../commands'));
 		await this.registerCommands();
 
 		this.client.on(Events.ClientReady, () => {
@@ -31,7 +36,7 @@ export class CommandsService extends Service {
 		return true;
 	}
 
-	private async readCommands(dir: string): Promise<void> {
+	private async loadCommands(dir: string): Promise<void> {
 		const commandFiles = await fs.readdir(dir);
 
 		await Promise.all(
@@ -40,30 +45,32 @@ export class CommandsService extends Service {
 				const stat = await fs.stat(filePath);
 
 				if (stat.isDirectory()) {
-					await this.readCommands(filePath);
-				} else if (commandFile.endsWith('.ts')) {
-					const CommandModule: any = await import(filePath);
+					await this.loadCommands(filePath);
+				} else if (
+					commandFile.endsWith('.ts') ||
+					commandFile.endsWith('.js')
+				) {
+					const CommandModule = (await import(
+						filePath
+					)) as ModuleType<Command>;
 
 					if (
 						CommandModule.default &&
 						CommandModule.default.prototype instanceof Command
 					) {
-						// TODO: improve types
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, new-cap
-						const command: Command = new CommandModule.default(
-							this.client
-						);
+						const CommandConstructor = CommandModule.default;
+						const command = new CommandConstructor(this.client);
 						this.commands.push(command);
 						this.cmdMap.set(command.name.toLowerCase(), command);
 						this.client.logger.info(
-							`Loaded command ${command.name}.ts from ${path.relative(
+							`Loaded command ${command.name} from ${path.relative(
 								process.cwd(),
 								filePath
 							)}`
 						);
 					} else {
-						this.client.logger.info(
-							`error: The command at ${filePath} is not an instance of the Command class.`
+						this.client.logger.warn(
+							`The command at ${filePath} is not an instance of the Command class.`
 						);
 					}
 				}
@@ -81,7 +88,7 @@ export class CommandsService extends Service {
 
 			const data = (await rest.put(
 				Routes.applicationGuildCommands(
-					process.env.APPLICATION_ID!,
+					process.env.CLIENT_ID!,
 					process.env.GUILD_ID!
 				),
 				{ body: this.commands.map((command) => command.data.toJSON()) }
@@ -135,7 +142,7 @@ export class CommandsService extends Service {
 		// Execute the command
 		try {
 			await cmd.execute(interaction, {
-				messaging: this.client.services.messaging,
+				services: this.client.services,
 				commands: this,
 				member,
 				channel: channel as TextChannel,

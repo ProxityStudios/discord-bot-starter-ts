@@ -1,15 +1,19 @@
-import type { CommandsService } from './services/commands';
-import type { MessagingService } from './services/messaging';
-import type { Service } from './services/service';
+import type { CommandsService } from './services/Commands';
+import type { MessagingService } from './services/Messaging';
+import type { Service } from './services/Service';
 
 export enum CommandName {
 	// General
-	Hello = 'hello',
+	Echo = 'echo',
 	Help = 'help',
+
+	// Moderation
+	Kick = 'kick',
 }
 
 export enum CommandCategory {
 	General = 'General',
+	Moderation = 'Moderation',
 }
 
 export interface Services {

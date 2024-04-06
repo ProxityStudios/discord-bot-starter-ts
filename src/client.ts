@@ -1,9 +1,9 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { ILogObj, Logger } from 'tslog';
-import { MessagingService } from './services/messaging';
-import { CommandsService } from './services/commands';
+import { MessagingService } from './services/Messaging';
+import { CommandsService } from './services/Commands';
 import { Services } from './types';
-import { Service } from './services/service';
+import { Service } from './services/Service';
 
 export class MyClient extends Client {
 	public services: Services;
@@ -43,11 +43,13 @@ export class MyClient extends Client {
 				servicesPromises.push(s.init());
 			});
 
-			this.logger.info('Starting services');
+			this.logger.info('Starting services...');
 			await Promise.all(servicesPromises);
-			this.logger.info('All services initialized successfully');
+			this.logger.info('All services initialized successfully.');
 		} catch (error) {
-			this.logger.error(`error: Error starting services: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			this.logger.error(
+				`Error starting services: ${(error as Error).message}`
+			);
 			throw error;
 		}
 	}

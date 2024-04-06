@@ -1,14 +1,10 @@
 import { ColorResolvable, EmbedBuilder } from 'discord.js';
-import { Service } from './service';
+import { Service } from './Service';
 
 export class MessagingService extends Service {
 	public async init(): Promise<true | Error> {
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				this.client.logger.info(`Messaging service done`);
-				resolve(true);
-			}, 0);
-		});
+		this.client.logger.info('Messaging service done.');
+		return Promise.resolve(true);
 	}
 
 	private createEmbed(

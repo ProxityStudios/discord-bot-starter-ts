@@ -1,5 +1,9 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import { MyClient } from './client';
+
+dotenv.config({
+	path: `.env.${process.env.NODE_ENV ?? 'production'}`,
+});
 
 const client = new MyClient();
 
